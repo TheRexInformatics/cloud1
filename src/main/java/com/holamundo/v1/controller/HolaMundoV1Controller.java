@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequestMapping("/api/v1")
 public class HolaMundoV1Controller {
 
+    @GetMapping
+    
     // Este es un ejemplo de un endpoint GET que no recibe parámetros y retorna un saludo 
     public String holaMundo() {
         return "hola Mundo v1.0.0";
@@ -21,4 +23,5 @@ public class HolaMundoV1Controller {
     public String despedida() {
         return "despedida V1.1.0";
     }
+
 }
