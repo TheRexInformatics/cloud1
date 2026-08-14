@@ -30,3 +30,5 @@ EXPOSE 8080
 
 # 6. Comando de inicio con optimización de memoria para contenedores
 ENTRYPOINT ["java", "-XX:+UseContainerSupport", "-XX:MaxRAMPercentage=75.0", "-jar", "app.jar"]
+
+# Archivo Necesario para la ejecución de la aplicación Spring Boot
