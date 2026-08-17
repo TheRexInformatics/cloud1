@@ -1,0 +1,5 @@
+string: 
+    application:
+        name: holamundov1
+jwt:
+  secrets: EstaEsUnaClaveSuperSeguraDe32Caracteres123!
