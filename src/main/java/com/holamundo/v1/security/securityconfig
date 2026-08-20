@@ -1,7 +1,5 @@
 package com.holamundo.v1.security;
 
-import io.jsonwebtoken.security.Keys;
-import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,36 +9,28 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import java.nio.charset.StandardCharsets;
-import java.security.Key;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Value("${jwt.secret}")
-    private String secretString;
-
-    private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(secretString.getBytes(StandardCharsets.UTF_8));
-    }
+    @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
+    private String issuerUri;
 
     @Bean
     public JwtDecoder jwtDecoder() {
-        SecretKey secretKey = (SecretKey) getSigningKey();
-        return NimbusJwtDecoder.withSecretKey(secretKey).build();
+        return NimbusJwtDecoder.withJwkSetUri(issuerUri + "/.well-known/jwks.json").build();
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) 
+            .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/api/v1/public").permitAll()
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2
-                .jwt(jwt -> jwt.decoder(jwtDecoder())) 
+                .jwt(jwt -> jwt.decoder(jwtDecoder()))
             );
 
         return http.build();
