@@ -18,7 +18,7 @@ public class SecurityConfig {
     private String issuerUri;
     @Value("${spring.security.oauth2.resourceserver.jwt. tenant-id}")
     private String tenantId;
-    }
+    
     @Bean
     public JwtDecoder jwtDecoder() {
         // URL directa limpia sin duplicar /v2.0
