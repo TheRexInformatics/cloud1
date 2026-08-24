@@ -11,22 +11,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1")
 public class HolaMundoV1Controller {
 
-    // 1. ENDPOINT PÚBLICO (Permitido por SecurityConfig mediante "/api/v1/public")
     @GetMapping("/public")
     public String holaMundoPublico() {
         return "hola Mundo v1.0.0 (Endpoint Público)";
     }
 
-    // 2. ENDPOINT PROTEGIDO GET (Requiere Token Bearer)
-    @GetMapping("/private")
+    // Escucha en GET /api/v1
+    @GetMapping
     public String holaMundoPrivado(@AuthenticationPrincipal Jwt jwt) {
-        // Obtenemos el usuario autenticado directamente desde el Token JWT
         String username = jwt.getSubject();
         return "Hola " + username + ", bienvenido al endpoint privado (GET)";
     }
 
-    // 3. ENDPOINT PROTEGIDO POST (Requiere Token Bearer)
-    @PostMapping("/private")
+    // Escucha en POST /api/v1
+    @PostMapping
     public String despedidaPrivada(@AuthenticationPrincipal Jwt jwt) {
         String username = jwt.getSubject();
         return "Hasta luego " + username + ", mensaje desde endpoint protegido (POST)";
