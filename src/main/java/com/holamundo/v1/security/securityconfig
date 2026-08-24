@@ -16,7 +16,7 @@ public class SecurityConfig {
 
     @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
     private String issuerUri;
-    @Value("${spring.security.oauth2.resourceserver.jwt. tenant-id}")
+    @Value("${spring.security.oauth2.resourceserver.jwt.tenant-id}")
     private String tenantId;
 
     @Bean
