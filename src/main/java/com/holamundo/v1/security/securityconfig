@@ -18,11 +18,11 @@ public class SecurityConfig {
     private String issuerUri;
     @Value("${spring.security.oauth2.resourceserver.jwt. tenant-id}")
     private String tenantId;
-    
+
     @Bean
     public JwtDecoder jwtDecoder() {
         // URL directa limpia sin duplicar /v2.0
-        String jwkSetUri = issuerUri+tenantId+”/discovery/v2.0/keys";
+        String jwkSetUri = issuerUri+tenantId+"/discovery/v2.0/keys";
         
         NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withJwkSetUri(jwkSetUri).build();
         return jwtDecoder;  
