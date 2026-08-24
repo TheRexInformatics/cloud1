@@ -16,32 +16,16 @@ public class SecurityConfig {
 
     @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
     private String issuerUri;
-
-    @Value("${spring.security.oauth2.resourceserver.jwt.client-id}")
-    private String clientId;
-
-    @Value("${spring.security.oauth2.resourceserver.jwt.tenant-id}")
+    @Value("${spring.security.oauth2.resourceserver.jwt. tenant-id}")
     private String tenantId;
-
+    }
     @Bean
     public JwtDecoder jwtDecoder() {
-        // 1. Construcción directa del endpoint de claves para evitar fallos de resolución OIDC en Azure
-        String jwkSetUri = String.format("https://login.microsoftonline.com/%s/discovery/v2.0/keys", tenantId);
-        NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withJwkSetUri(jwkSetUri).build();
-
-        // 2. Validador de Emisor (Verifica que el token venga de tu tenant)
-        OAuth2TokenValidator<Jwt> withIssuer = JwtValidators.createDefaultWithIssuer(issuerUri);
+        // URL directa limpia sin duplicar /v2.0
+        String jwkSetUri = issuerUri+tenantId+”/discovery/v2.0/keys";
         
-        // 3. Validador de Audiencia (Verifica que el token esté destinado a tu API)
-        OAuth2TokenValidator<Jwt> withAudience = new JwtClaimValidator<Object>("aud", 
-            aud -> aud != null && (aud.equals(clientId) || aud.toString().contains(clientId))
-        );
-
-        // 4. Combinamos los validadores y los asignamos al decoder
-        OAuth2TokenValidator<Jwt> combinedValidator = new DelegatingOAuth2TokenValidator<>(withIssuer, withAudience);
-        jwtDecoder.setJwtValidator(combinedValidator);
-
-        return jwtDecoder;
+        NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withJwkSetUri(jwkSetUri).build();
+        return jwtDecoder;  
     }
 
     @Bean
@@ -55,7 +39,6 @@ public class SecurityConfig {
             .oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwt -> jwt.decoder(jwtDecoder()))
             );
-
         return http.build();
     }
 }
