@@ -6,5 +6,4 @@ spring:
       resourceserver:
         jwt:
           tenant-id: 725ff774-cc8e-43c4-85e6-7c46c40c43d8
-          client-id: c6b83457-2dcc-4e37-8ec2-118f92297c3d
-          issuer-uri: https://login.microsoftonline.com/725ff774-cc8e-43c4-85e6-7c46c40c43d8/v2.0
+          issuer-uri: https://login.microsoftonline.com/
