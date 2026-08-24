@@ -1,8 +1,10 @@
-string: 
-    application:
-        name: holamundov1
-    security:
-        oauth2:
-            resourceserver:
-                jwt:
-                    issuer-uri: https://cognito-idp.us-east-1.amazonaws.com/us-east-1_uaqsBgvGY
+spring:
+  application:
+    name: holamundov1
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          tenant-id: 725ff774-cc8e-43c4-85e6-7c46c40c43d8
+          client-id: c6b83457-2dcc-4e37-8ec2-118f92297c3d
+          issuer-uri: https://login.microsoftonline.com/725ff774-cc8e-43c4-85e6-7c46c40c43d8/v2.0

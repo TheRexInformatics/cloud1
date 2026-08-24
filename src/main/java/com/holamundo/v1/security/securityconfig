@@ -5,8 +5,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -16,9 +17,31 @@ public class SecurityConfig {
     @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}")
     private String issuerUri;
 
+    @Value("${spring.security.oauth2.resourceserver.jwt.client-id}")
+    private String clientId;
+
+    @Value("${spring.security.oauth2.resourceserver.jwt.tenant-id}")
+    private String tenantId;
+
     @Bean
     public JwtDecoder jwtDecoder() {
-        return NimbusJwtDecoder.withJwkSetUri(issuerUri + "/.well-known/jwks.json").build();
+        // 1. Construcción directa del endpoint de claves para evitar fallos de resolución OIDC en Azure
+        String jwkSetUri = String.format("https://login.microsoftonline.com/%s/discovery/v2.0/keys", tenantId);
+        NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withJwkSetUri(jwkSetUri).build();
+
+        // 2. Validador de Emisor (Verifica que el token venga de tu tenant)
+        OAuth2TokenValidator<Jwt> withIssuer = JwtValidators.createDefaultWithIssuer(issuerUri);
+        
+        // 3. Validador de Audiencia (Verifica que el token esté destinado a tu API)
+        OAuth2TokenValidator<Jwt> withAudience = new JwtClaimValidator<Object>("aud", 
+            aud -> aud != null && (aud.equals(clientId) || aud.toString().contains(clientId))
+        );
+
+        // 4. Combinamos los validadores y los asignamos al decoder
+        OAuth2TokenValidator<Jwt> combinedValidator = new DelegatingOAuth2TokenValidator<>(withIssuer, withAudience);
+        jwtDecoder.setJwtValidator(combinedValidator);
+
+        return jwtDecoder;
     }
 
     @Bean
